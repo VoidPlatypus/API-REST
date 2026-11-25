@@ -1,0 +1,182 @@
+openapi: 3.0.3
+
+info:
+  title: API Jeux Vidéo
+  version: 1.0.0
+  description: API de gestion d'une collection de jeux vidéo.
+
+servers:
+  - url: http://localhost:3000
+    description: Serveur local
+
+paths:
+  /api/games:
+    get:
+      summary: Récupérer tous les jeux
+      description: Renvoie la liste complète des jeux de la collection.
+      responses:
+        '200':
+          description: Liste des jeux récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Ajouter un jeu
+      description: Crée un nouveau jeu. L'identifiant est généré par le serveur.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGameInput'
+      responses:
+        '201':
+          description: Jeu créé.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/games/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identifiant du jeu.
+        schema:
+          type: integer
+          example: 3
+    get:
+      summary: Récupérer un jeu
+      description: Renvoie le jeu correspondant à l'identifiant.
+      responses:
+        '200':
+          description: Jeu trouvé.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      summary: Modifier un jeu
+      description: Remplace les données du jeu correspondant à l'identifiant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGameInput'
+      responses:
+        '200':
+          description: Jeu modifié.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Supprimer un jeu
+      description: Supprime le jeu correspondant à l'identifiant.
+      responses:
+        '204':
+          description: Jeu supprimé.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  schemas:
+    Game:
+      type: object
+      required: [id, title, editor, releaseYear, genre, rating]
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: The Legend of Zelda
+        editor:
+          type: string
+          example: Nintendo
+        releaseYear:
+          type: integer
+          example: 2017
+        genre:
+          type: string
+          example: Aventure
+        rating:
+          type: number
+          minimum: 0
+          maximum: 10
+          example: 9.5
+    CreateGameInput:
+      type: object
+      required: [title, editor, releaseYear, genre, rating]
+      properties:
+        title:
+          type: string
+          example: The Legend of Zelda
+        editor:
+          type: string
+          example: Nintendo
+        releaseYear:
+          type: integer
+          example: 2017
+        genre:
+          type: string
+          example: Aventure
+        rating:
+          type: number
+          minimum: 0
+          maximum: 10
+          example: 9.5
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Message d'erreur
+
+  responses:
+    BadRequest:
+      description: Requête invalide (identifiant ou corps JSON incorrect).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Jeu introuvable.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Erreur interne du serveur.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
