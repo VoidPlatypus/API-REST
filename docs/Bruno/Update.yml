@@ -1,0 +1,27 @@
+info:
+  name: Update
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/games/37"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 37,
+        "title": "Tomb Raiderx",
+        "editor": "Eidos Interactive",
+        "releaseYear": 2000,
+        "genre": "Action-aventure",
+        "rating": 9.1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
